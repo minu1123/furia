@@ -1,0 +1,155 @@
+.container {
+  min-height: 100vh;
+  background-color: #f2f3f5;
+  color: #1a1a1a;
+  padding: 2rem;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Botão voltar */
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #7b33cc;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  padding: 0;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.backButton:hover {
+  color: #a64fff;
+}
+
+/* Título principal */
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #7b33cc;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Cards de estatística */
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.card {
+  background-color: #ffffff;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
+}
+
+.cardIcon {
+  padding: 0.75rem;
+  border-radius: 50%;
+  background-color: #ede9fe;
+  color: #7b33cc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardText {
+  display: flex;
+  flex-direction: column;
+}
+
+.cardTitle {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.cardValue {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #7b33cc;
+}
+
+/* Tabela */
+.tableContainer {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
+}
+
+.tableTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #7b33cc;
+  margin-bottom: 1rem;
+}
+
+.table {
+  width: 100%;
+  font-size: 0.95rem;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+
+.table thead th {
+  background-color: #f9f9f9;
+  color: #666;
+  border-bottom: 1px solid #ddd;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid #eee;
+  transition: background 0.2s;
+}
+
+.table tbody tr:hover {
+  background-color: #f0f0f0;
+}
+
+.table a {
+  color: #7b33cc;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.textGray {
+  color: #999;
+}
+
+/* Ícones de status */
+.status {
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.status.success {
+  color: #16a34a; /* verde */
+}
+
+.status.error {
+  color: #dc2626; /* vermelho */
+}
+
+.status.pending {
+  color: #ca8a04; /* amarelo */
+}
