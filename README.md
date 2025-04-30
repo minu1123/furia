@@ -8,6 +8,8 @@ Coletar dados básicos, como nome, endereço, CPF e informações sobre interess
 Realizar upload de documentos e validar a identificação da pessoa utilizando AI.
 Vincular redes sociais ao perfil do usuário, permitindo leitura de interações, páginas seguidas e atividades relacionadas a organizações de e-sports como a FURIA.
 Compartilhar links de perfis em sites de e-sports e validar, utilizando AI, que o conteúdo é relevante ao perfil do usuário.
+
+
 Entrega:
 Aplicativo funcional ou protótipo navegável com integração das funcionalidades propostas.
 Apresente em um vídeo de 3 minutos como a solução funciona com seus próprios dados.
