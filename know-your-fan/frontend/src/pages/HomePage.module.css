@@ -40,12 +40,12 @@
 }
 
 .nav a:hover {
-  color: #a64fff;
+  color: #8b45d1;
 }
 
 .navButton {
-  background-color: #a64fff;
-  color: white;
+  background-color: rgb(255, 255, 255);
+  color: rgb(61, 61, 61);
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 8px;
