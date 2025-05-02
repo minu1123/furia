@@ -15,6 +15,9 @@ interface Fan {
   documento_validado?: boolean
   perfil_validado?: boolean
   redes_vinculadas?: boolean
+  twitter?: string
+  instagram?: string
+  twitch?: string
 }
 
 export default function Dashboard() {
@@ -32,11 +35,18 @@ export default function Dashboard() {
         console.error('Erro ao carregar fãs:', error)
       } else {
         setFans(data)
-        data.forEach(fan => {
+
+        for (const fan of data) {
           if (fan.documento_url && fan.documento_validado == null) {
-            validarDocumento(fan)
+            await validarDocumento(fan)
           }
-        })
+          if (fan.perfil_esports && fan.perfil_validado == null) {
+            await validarPerfil(fan)
+          }
+          if (fan.redes_vinculadas == null) {
+            await validarRedes(fan)
+          }
+        }
       }
     }
 
@@ -45,8 +55,8 @@ export default function Dashboard() {
 
   const validarDocumento = async (fan: Fan) => {
     const url = `https://wdybgyrkuabwspapjerv.supabase.co/storage/v1/object/public/documentos/${fan.documento_url}`
-    const cpfLimpo = fan.cpf?.replace(/\D/g, '') || ''
-    const nomeLimpo = fan.nome.trim().toLowerCase()
+    const cpfLimpo = (fan.cpf || '').replace(/\D/g, '')
+    const nomeLimpo = fan.nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
 
     try {
       const response = await fetch('https://api.ocr.space/parse/imageurl', {
@@ -60,27 +70,71 @@ export default function Dashboard() {
       })
 
       const result = await response.json()
-      const texto = result?.ParsedResults?.[0]?.ParsedText?.toLowerCase()
+      const textoOCR = result?.ParsedResults?.[0]?.ParsedText
+      if (!textoOCR) {
+        console.warn('OCR não retornou texto.')
+        return
+      }
 
-      if (!texto) return
-
+      const texto = textoOCR.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
       const nomeMatch = texto.includes(nomeLimpo)
-      const cpfMatch = texto.includes(cpfLimpo)
+      const cpfMatch = texto.replace(/\D/g, '').includes(cpfLimpo)
       const validado = nomeMatch && cpfMatch
 
-      await supabase.from('fans')
+      await supabase
+        .from('fans')
         .update({ documento_validado: validado })
         .eq('id', fan.id)
 
-      console.log(`✅ Documento ${fan.nome}: ${validado ? 'VALIDADO' : 'NÃO VALIDADO'}`)
-
-      // Atualiza estado local
       setFans(prev =>
         prev.map(f => f.id === fan.id ? { ...f, documento_validado: validado } : f)
       )
     } catch (err) {
       console.error('Erro na validação OCR:', err)
     }
+  }
+
+  const validarPerfil = async (fan: Fan) => {
+    try {
+      const url = fan.perfil_esports?.toLowerCase() || ''
+
+      // Palavras-chave aceitas na URL para validação
+      const keywords = [
+        'twitch', 'liquipedia', 'furia', 'esports', 'steam',
+        'csgo', 'valorant', 'lol', 'leagueoflegends', 'dota',
+        'hltv', 'faceit'
+      ]
+
+      const valido = keywords.some(keyword => url.includes(keyword))
+
+      await supabase
+        .from('fans')
+        .update({ perfil_validado: valido })
+        .eq('id', fan.id)
+
+      setFans(prev =>
+        prev.map(f => f.id === fan.id ? { ...f, perfil_validado: valido } : f)
+      )
+    } catch (err) {
+      console.error('Erro ao validar perfil:', fan.perfil_esports, err)
+    }
+  }
+
+  const validarRedes = async (fan: Fan) => {
+    const redes = [fan.twitter, fan.instagram, fan.twitch].filter(Boolean)
+    const algumaValida = redes.some(url =>
+      url?.startsWith('http') &&
+      /(twitch\.tv|twitter\.com|instagram\.com)/.test(url)
+    )
+
+    await supabase
+      .from('fans')
+      .update({ redes_vinculadas: algumaValida })
+      .eq('id', fan.id)
+
+    setFans(prev =>
+      prev.map(f => f.id === fan.id ? { ...f, redes_vinculadas: algumaValida } : f)
+    )
   }
 
   return (

@@ -14,10 +14,11 @@ export default function FanForm() {
     cidade: '',
     estado: '',
     jogos_favoritos: '',
-    redes_sociais: '',
-    perfil_esports: '',
+    perfil_esports: '', 
   })
 
+  const [selectedRede, setSelectedRede] = useState('')
+  const [linkRede, setLinkRede] = useState('')
   const [file, setFile] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -54,7 +55,6 @@ export default function FanForm() {
 
       fileUrl = uploadData.path
 
-      // === OCR ===
       const documentoUrl = `https://wdybgyrkuabwspapjerv.supabase.co/storage/v1/object/public/documentos/${fileUrl}`
       const ocrForm = new FormData()
       ocrForm.append('url', documentoUrl)
@@ -68,10 +68,11 @@ export default function FanForm() {
         })
 
         const result = await response.json()
-        const text = result?.ParsedResults?.[0]?.ParsedText?.toLowerCase()
+        const textoOCR = result?.ParsedResults?.[0]?.ParsedText || ''
 
-        const nomeMatch = text?.includes(formData.nome.toLowerCase())
-        const cpfMatch = text?.includes(formData.cpf.replace(/\D/g, ''))
+        const texto = textoOCR.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+        const nomeMatch = texto.includes(formData.nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase())
+        const cpfMatch = texto.replace(/\D/g, '').includes(formData.cpf.replace(/\D/g, ''))
 
         documentoValidado = nomeMatch && cpfMatch
       } catch (err) {
@@ -79,10 +80,20 @@ export default function FanForm() {
       }
     }
 
+    const redes: Record<string, string> = {
+      twitter: '',
+      instagram: '',
+      twitch: ''
+    }
+    if (selectedRede && linkRede) redes[selectedRede] = linkRede
+
     const { error } = await supabase.from('fans').insert([{
       ...formData,
+      ...redes,
       documento_url: fileUrl,
-      documento_validado: documentoValidado
+      documento_validado: documentoValidado,
+      perfil_validado: null,
+      redes_vinculadas: null
     }])
 
     setLoading(false)
@@ -90,6 +101,7 @@ export default function FanForm() {
       alert('Erro ao cadastrar fã')
     } else {
       alert('Fã cadastrado com sucesso!')
+      navigate('/dashboard')
     }
   }
 
@@ -112,8 +124,6 @@ export default function FanForm() {
               { name: 'cidade', label: 'Cidade' },
               { name: 'estado', label: 'Estado' },
               { name: 'jogos_favoritos', label: 'Jogos favoritos' },
-              { name: 'redes_sociais', label: 'Redes sociais' },
-              { name: 'perfil_esports', label: 'Perfil em sites de e-sports' },
             ].map((field) => (
               <div key={field.name} className={styles.inputGroup}>
                 <label htmlFor={field.name}>{field.label}</label>
@@ -125,6 +135,45 @@ export default function FanForm() {
                 />
               </div>
             ))}
+
+            {/* Perfil de jogos */}
+            <div className={styles.inputGroup}>
+              <label htmlFor="perfil_esports">Perfil de jogos</label>
+              <input
+                id="perfil_esports"
+                name="perfil_esports"
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className={styles.inputGroup}>
+              <label htmlFor="rede">Escolha a rede social</label>
+              <select
+                id="rede"
+                value={selectedRede}
+                onChange={(e) => setSelectedRede(e.target.value)}
+                required
+              >
+                <option value="">Selecione...</option>
+                <option value="twitch">Twitch</option>
+                <option value="twitter">Twitter</option>
+                <option value="instagram">Instagram</option>
+              </select>
+            </div>
+
+            {selectedRede && (
+              <div className={styles.inputGroup}>
+                <label htmlFor="linkRede">Link do perfil</label>
+                <input
+                  id="linkRede"
+                  placeholder={`https://${selectedRede}.com/seuperfil`}
+                  value={linkRede}
+                  onChange={(e) => setLinkRede(e.target.value)}
+                  required
+                />
+              </div>
+            )}
           </div>
 
           <div className={styles.inputGroup}>
