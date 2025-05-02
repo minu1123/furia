@@ -153,7 +153,7 @@ yarn dev
 **Minu**
 Criado com 💜 para o desafio da FURIA.
 
-[Portfólio](https://github.com/seu-usuario) — [LinkedIn](https://linkedin.com/in/seu-usuario)
+[Portfólio](https://github.com/minu1123) — [LinkedIn](https://www.linkedin.com/in/miszael-costa-19b0b4251/)
 
 ---
 
