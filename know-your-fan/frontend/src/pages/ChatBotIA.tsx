@@ -23,7 +23,7 @@ const ChatBotIA: React.FC = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: 'Bearer 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'
+          Authorization: 'Bearer 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'
         },
         body: JSON.stringify({
           model: 'openai/gpt-3.5-turbo',
@@ -44,7 +44,12 @@ const ChatBotIA: React.FC = () => {
         })
       });
 
+      if (!response.ok) {
+        throw new Error(`Erro HTTP: ${response.status}`);
+      }
+
       const data = await response.json();
+      console.log('Resposta da IA:', data); // Para debug
       const aiText = data?.choices?.[0]?.message?.content?.trim();
 
       setMessages(prev => [
